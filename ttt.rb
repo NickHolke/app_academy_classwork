@@ -4,7 +4,7 @@ class Board
   attr_accessor :winner
 
   def initialize
-    @board = Array.new(3, Array.new(3, " "))
+    @board = Array.new(3) {Array.new(3," ")}
     @winner = nil
   end
 
@@ -18,6 +18,7 @@ class Board
     end
     nil
   end
+
   def columns
     (0..2).each do |i|
       column = []
@@ -31,6 +32,7 @@ class Board
     end
     nil
   end
+
   def diag
     down = [board[0][0], board[1][1], board[2][2]]
     up = [board[2][0], board[1][1], board[2][0]]
@@ -40,6 +42,7 @@ class Board
     end
     r
   end
+
   def win_helper(arr)
     if arr.all? { |value| value == :x}
       return :x
@@ -62,14 +65,11 @@ class Board
 
 
   def place_mark(row, column, mark)
-    p board[row][column]
     board[row][column] = mark
-    p board[row][column]
-    p board
   end
 
-  def valid_move?(row, column)
-    if board[pos[0]][pos[1]] == nil
+  def valid_move?(pos)
+    if board[pos[0]][pos[1]] == " "
       true
     else
       false
@@ -103,7 +103,9 @@ class Game
       if i.odd?
         # is cpu
         mark = :o
-        row = cpu.pick_pos
+        row = @cpu.pick_pos[0]
+        column = @cpu.pick_pos[1]
+        pos = [row,column]
       else
         # is human
         pos = @board.prompt
@@ -111,7 +113,14 @@ class Game
         column = pos[1]
         mark = :x
       end
-      @board.place_mark(row, column, mark)
+      p pos
+      if @board.valid_move?(pos)
+        @board.place_mark(row, column, mark)
+        p @board
+      else
+        puts "Please select a valid move"
+        next
+      end
       i += 1
     end
     puts "#{@board.winner} wins!"
@@ -129,6 +138,7 @@ class ComputerPlayer
     2.times do
       pos << rand(0..2)
     end
+    pos
   end
 end
 
